@@ -1,6 +1,4 @@
-// pages/App/cities.tsx
-import styles from '@/components/Sidebar.module.css'
-
+// pages/app/cities.tsx
 const cities = [
     {
         cityName: "Lisbon",
@@ -42,30 +40,48 @@ const cities = [
 
 export default function Cities() {
     return (
-        <div>
-            <h3>Cities List</h3>
-            <ul>
+        <div style={{ padding: '20px' }}>
+            <h2>Cities </h2>
+            <div style={{ display: 'grid', gap: '15px' }}>
                 {cities.map((city) => (
-                    <li key={city.id} style={{
-                        marginBottom: '15px',
-                        padding: '10px',
+                    <div key={city.id} style={{
+                        padding: '15px',
                         border: '1px solid #ddd',
-                        borderRadius: '5px'
+                        borderRadius: '8px',
+                        backgroundColor: '#f9f9f9'
                     }}>
-                        <div>
-                            <strong>{city.emoji} {city.cityName}, {city.country}</strong>
+                        <div style={{
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            marginBottom: '8px'
+                        }}>
+                            {city.emoji} {city.cityName}
                         </div>
-                        <div style={{fontSize: '14px', color: '#666', marginTop: '5px'}}>
+                        <div style={{
+                            color: '#666',
+                            marginBottom: '5px'
+                        }}>
+                            Country: {city.country}
+                        </div>
+                        <div style={{
+                            color: '#666',
+                            fontSize: '14px',
+                            marginBottom: '5px'
+                        }}>
                             Date: {new Date(city.date).toLocaleDateString()}
                         </div>
                         {city.notes && (
-                            <div style={{fontSize: '14px', fontStyle: 'italic', marginTop: '5px'}}>
+                            <div style={{
+                                fontStyle: 'italic',
+                                color: '#888',
+                                fontSize: '14px'
+                            }}>
                                 Notes: {city.notes}
                             </div>
                         )}
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 }

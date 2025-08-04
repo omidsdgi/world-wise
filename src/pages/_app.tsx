@@ -1,23 +1,21 @@
 import "@/styles/globals.css";
 import "@/styles/index.css";
-import style from "../styles/app.module.css";
 import type { AppProps } from "next/app";
-import Link from "next/link";
+import App from "@/pages/App";
+import {useRouter} from "next/router";
 
-export default function App({ Component, pageProps }: AppProps) {
-    return (
-        <>
-            <header>
-                <h1>WorldWise</h1>
-                <nav  className={style.nav}>
-                    <Link href={"/public"} className={style.link}>Home</Link>
-                    <Link href={"/Pricing.tsx"} className={style.link}>Pricing</Link>
-                    <Link href={"/Product.tsx"} className={style.link}>Product</Link>
-                </nav>
-            </header>
-            <main  style={{ padding: "20px", textAlign: "center" }}>
+export default function AppLayout({ Component, pageProps }: AppProps) {
+    const router = useRouter();
+
+    // اگر مسیر با /app شروع می‌شود، layout App را استفاده کن
+    if (router.pathname.startsWith('/app')) {
+        return (
+            <App>
                 <Component {...pageProps} />
-            </main>
-        </>
-    )
+            </App>
+        );
+    }
+
+    // در غیر این صورت، کامپوننت را مستقیماً render کن
+    return <Component {...pageProps} />;
 }

@@ -5,3 +5,8 @@
   display: flex;
   position: relative;
 }
+.app > * {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
