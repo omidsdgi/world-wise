@@ -1,4 +1,4 @@
-import styles from "./Product.module.css";
+import styles from "../product/Product.module.css";
 import Image from "next/image";
 import {PageNav} from "@/components/PageNav";
 

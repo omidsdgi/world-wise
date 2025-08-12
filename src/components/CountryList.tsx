@@ -2,13 +2,22 @@ import styles from './CountryList.module.css'
 import Spinner from "@/components/Spinner";
 import Message from "@/components/Message";
 import CountryItem from "@/components/CountryItem";
+import {CityType} from "@/type/CityType";
 
+interface CountryListProps {
+    cities: CityType[];
+    isLoading: boolean;
+}
 
-export  function CountryList({cities,isLoading}) {
+interface CountryProps  {
+    country: string;
+    emoji: string;
+};
+export  function CountryList({cities,isLoading}:CountryListProps) {
     if (isLoading) return<Spinner />;
     if (!cities.length) return <Message message="Add your first city by clicking on a city on the map"/>;
 
-    const countries = cities.reduce((arr, city) => {
+    const countries:CountryProps[] = cities.reduce<CountryProps[]>((arr, city) => {
         if (!arr.map((el)=>el.country).includes(city.country))
             return [...arr, {country: city.country,emoji: city.emoji}];
         else return arr;
@@ -16,7 +25,7 @@ export  function CountryList({cities,isLoading}) {
 
     return (
         <ul className={styles.countryList}>
-            {countries.map((country) => (<CountryItem country={country} />))}
+            {countries.map((country) => (<CountryItem key={country.country} country={country} />))}
         </ul>
     );
 }

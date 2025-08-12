@@ -9,13 +9,13 @@ export  function PageNav() {
 
             <ul>
                 <li>
-                    <Link href= "/Product">Product</Link>
+                    <Link href= "/product">Product</Link>
                 </li>
                 <li>
-                    <Link href="/Pricing">Pricing</Link>
+                    <Link href="/pricing">Pricing</Link>
                 </li>
                 <li>
-                    <Link href="/Login" className={styles.ctaLink}>Login</Link>
+                    <Link href="/logo" className={styles.ctaLink}>Login</Link>
                 </li>
             </ul>
         </nav>

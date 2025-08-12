@@ -1,37 +1,22 @@
-import {useEffect, useState} from "react";
 import Link from "next/link";
 
 import styles from './AppNav.module.css'
 import {useRouter} from "next/router";
 import {CityList} from "@/components/CityList";
 import {CountryList} from "@/components/CountryList";
+import {CityType} from "@/type/CityType";
+import {CityDetails} from "@/components/CityDetails";
 
-const BASE_URL= "http://localhost:8000"
+interface AppNavProps {
+    cities: CityType[];
+    isLoading: boolean;
+}
 
-export  function AppNav() {
-    const[cities,setCities]=useState([])
-    const[isLoading,setIsLoading]=useState(false)
-
+export  function AppNav({ cities, isLoading }:AppNavProps) {
     const router = useRouter();
     const currentPath = router.asPath;
-
-    useEffect(()=>{
-        async function fetchCities(){
-            try {
-                setIsLoading(true);
-                const res = await fetch(`${BASE_URL}/cities`);
-                const data = await res.json();
-                setCities(data);
-            }
-            catch{
-                alert("There was an error loading data...");
-            }
-            finally {
-                setIsLoading(false);
-            }
-        }
-        fetchCities()
-    },[setCities])
+    const {id} =router.query;
+    const selectedCity = cities.find((city) => city.id.toString() === id?.toString());
     return (
         <nav>
             <div className={styles.nav}>
@@ -54,6 +39,9 @@ export  function AppNav() {
 
             {currentPath === "/app/countries" && (
                 <CountryList cities={cities} isLoading={isLoading}/>
+            )}
+            {currentPath.startsWith("/app/cities/") && selectedCity && (
+                <CityDetails city={selectedCity} isLoading={isLoading} />
             )}
         </nav>
 
