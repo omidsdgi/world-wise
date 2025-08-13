@@ -6,8 +6,7 @@ import {CityList} from "@/components/CityList";
 import {CountryList} from "@/components/CountryList";
 import {CityType} from "@/type/CityType";
 import {CityDetails} from "@/components/CityDetails";
-import {Map} from "@/components/Map";
-import Form from "@/components/Form";
+import FormPage from "@/pages/app/form";
 
 interface AppNavProps {
     cities: CityType[];
@@ -16,9 +15,8 @@ interface AppNavProps {
 
 export  function AppNav({ cities, isLoading }:AppNavProps) {
     const router = useRouter();
-    const currentPath = router.asPath;
+    const { pathname } = useRouter();
     const {id} =router.query;
-
     const selectedCity = cities.find((city) => city.id.toString() === id?.toString());
     return (
         <>
@@ -26,32 +24,31 @@ export  function AppNav({ cities, isLoading }:AppNavProps) {
                 <div className={styles.nav}>
                     <ul>
                         <li>
-                            <Link href="/app/cities" className={currentPath === "/app/cities" ? "active" : ""}>
+                            <Link href="/app/cities" className={pathname === "/app/cities" ? "active" : ""}>
                                 Cities
                             </Link>
                         </li>
                         <li>
-                            <Link href="/app/countries" className={currentPath === "/app/countries" ? "active" : ""}>
+                            <Link href="/app/countries" className={pathname === "/app/countries" ? "active" : ""}>
                                 Countries
                             </Link>
                         </li>
                     </ul>
                 </div>
-                {currentPath === "/app/cities" && (
+                {pathname === "/app/cities" && (
                     <CityList cities={cities} isLoading={isLoading}/>
                 )}
-
-                {currentPath === "/app/countries" && (
+                {pathname === "/app/countries" && (
                     <CountryList cities={cities} isLoading={isLoading}/>
                 )}
-                {currentPath.startsWith("/app/cities/") && selectedCity && (
+                {pathname.startsWith("/app/cities/") && selectedCity && (
                     <CityDetails city={selectedCity} isLoading={isLoading} />
                 )}
-                {currentPath === "/app/form" && (
-                    <Form/>
+
+                {pathname === "/app/form" && (
+                    <FormPage/>
                 )}
             </nav>
-
         </>
     );
 }
