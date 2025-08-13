@@ -2,20 +2,13 @@ import styles from "./Sidebar.module.css"
 import {Logo} from "@/components/Logo";
 import {AppNav} from "@/components/AppNav";
 import React from "react";
-import {CityType} from "@/type/CityType";
 
 
-interface SidebarProps {
-    cities: CityType[];
-    isLoading: boolean;
-}
-export function Sidebar({cities, isLoading}: SidebarProps) {
-
+export function Sidebar() {
     return (
         <div className={styles.sidebar}>
             <Logo/>
-            <AppNav cities={cities} isLoading={isLoading}/>
-            {/*{renderSidebarContent()}*/}
+            <AppNav />
 
             <footer className={styles.footer}>
                 <p className={styles.copyright}>

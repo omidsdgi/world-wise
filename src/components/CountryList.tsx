@@ -3,6 +3,7 @@ import Spinner from "@/components/Spinner";
 import Message from "@/components/Message";
 import CountryItem from "@/components/CountryItem";
 import {CityType} from "@/type/CityType";
+import {useLayout} from "@/contexts/LayoutContext";
 
 interface CountryListProps {
     cities: CityType[];
@@ -13,7 +14,8 @@ interface CountryProps  {
     country: string;
     emoji: string;
 };
-export  function CountryList({cities,isLoading}:CountryListProps) {
+export  function CountryList() {
+    const {cities,isLoading}=useLayout()
     if (isLoading) return<Spinner />;
     if (!cities.length) return <Message message="Add your first city by clicking on a city on the map"/>;
 

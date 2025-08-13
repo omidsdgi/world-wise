@@ -1,9 +1,12 @@
-import React from "react";
+import React, {useMemo} from "react";
 import styles from './CityDetails.module.css';
 import Spinner from "@/components/Spinner";
 import Message from "@/components/Message";
 import { useRouter } from "next/router";
 import {CityType} from "@/type/CityType";
+import {useLayout} from "@/contexts/LayoutContext";
+import {router} from "next/client";
+import Button from "@/components/Button";
 
 interface CityDetailsProps {
     city: CityType;
@@ -17,14 +20,18 @@ const formatDate = (date: string) =>
         day: 'numeric',
     }).format(new Date(date));
 
-export function CityDetails({ city, isLoading }: CityDetailsProps) {
+export function CityDetails() {
+    const { cities, isLoading } = useLayout();
     const router = useRouter();
+    const { id } = router.query;
+
+    const city = cities.find((c) => c.id.toString() === id?.toString());
 
     if (isLoading) return <Spinner />;
     if (!city) return <Message message="City not found" />;
 
     const handleBack = () => {
-        router.push('/app/cities');
+        router.push("/app/cities");
     };
 
     return (
@@ -60,9 +67,9 @@ export function CityDetails({ city, isLoading }: CityDetailsProps) {
             </div>
 
             <div>
-                <button className={styles.btn} onClick={handleBack}>
+                <Button type="back"  onClick={handleBack}>
                     &larr; Back
-                </button>
+                </Button>
             </div>
         </div>
     );
