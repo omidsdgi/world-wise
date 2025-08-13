@@ -1,5 +1,5 @@
-import { CityType } from '@/types/CityType';
 import {CityList} from "@/components";
+import {CityType} from "@/type/CityType";
 
 interface CitiesPageProps {
     cities: CityType[];

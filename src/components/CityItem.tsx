@@ -1,12 +1,7 @@
 import styles from './CityItem.module.css'
 import Link from "next/link";
+import {CityType} from "@/type/CityType";
 
-interface CityType {
-    id: number;
-    emoji: string;
-    cityName: string;
-    date: string; // فرض بر این است که تاریخ به صورت رشته است
-}
 
 interface CityItemProps {
     city: CityType
@@ -21,7 +16,10 @@ const formatDate=(date:string)=>
 
 export  function CityItem({city}:CityItemProps) {
     return (
-        <Link href={`/app/cities/${city.id}`}>
+        <Link href={{
+            pathname: `/app/cities/${city.id}`,
+            query: { lat: city.position.lat, lng: city.position.lng }
+        }}>
         <li className={styles.cityItem}>
             <span className={styles.emoji}>{city.emoji}</span>
             <h3 className={styles.name}>{city.cityName}</h3>
@@ -29,5 +27,6 @@ export  function CityItem({city}:CityItemProps) {
             <button className={styles.deleteBtn}>X</button>
         </li>
         </Link>
+
     );
 }

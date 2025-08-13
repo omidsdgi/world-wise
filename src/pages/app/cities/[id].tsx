@@ -1,5 +1,4 @@
-// pages/app/cities/[id].tsx
-import { useRouter } from 'next/router';
+
 import {CityType} from "@/type/CityType";
 import {CityDetails} from "@/components/CityDetails";
 

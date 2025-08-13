@@ -1,49 +1,48 @@
-import styles from './Map.module.css'
+// import styles from './Map.module.css'
+// import {useRouter} from "next/router";
+//
+//
+// export function Map() {
+//     const router=useRouter();
+//     const {lat,lng}=router.query;
+//     return (
+//         <div className={styles.mapContainer}>
+//             <h1>Map</h1>
+//             {lat && lng ? (
+//                 <h2>
+//                     Position: {lat}, {lng}
+//                 </h2>
+//             ) : (
+//                 <p>No location selected</p>
+//             )}
+//         </div>
+//     );
+// }
+
+import { useRouter } from 'next/router';
 
 export function Map() {
+    const router = useRouter();
+    const { lat: latQuery, lng: lngQuery } = router.query;
+
+    const handleChangePosition = () => {
+        // مختصات دلخواه جدید برای نمونه
+        const newLat = 35.6895;  // مثلا تهران
+        const newLng = 51.3890;
+
+        router.replace({
+            pathname: router.pathname,
+            query: { ...router.query, lat: newLat, lng: newLng },
+        }, undefined, { shallow: true });
+    };
+
     return (
-        <div className={styles.mapContainer}>
-            <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100%',
-                flexDirection: 'column',
-                backgroundColor: '#e8f4f8',
-                backgroundImage: 'linear-gradient(45deg, #e8f4f8 25%, #f0f8ff 25%, #f0f8ff 50%, #e8f4f8 50%, #e8f4f8 75%, #f0f8ff 75%, #f0f8ff)',
-                backgroundSize: '20px 20px'
-            }}>
-                <div style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                    padding: '40px',
-                    borderRadius: '15px',
-                    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-                    textAlign: 'center'
-                }}>
-                    <h2 style={{
-                        color: '#2c3e50',
-                        marginBottom: '20px',
-                        fontSize: '2.5em'
-                    }}>
-                        🗺️ World Map
-                    </h2>
-                    <p style={{
-                        color: '#7f8c8d',
-                        textAlign: 'center',
-                        maxWidth: '400px',
-                        fontSize: '1.1em',
-                        lineHeight: '1.6'
-                    }}>
-                        Explore your travel destinations! Select Cities or Countries from the sidebar to view your journey details.
-                    </p>
-                    <div style={{
-                        marginTop: '30px',
-                        fontSize: '4em'
-                    }}>
-                        🌍
-                    </div>
-                </div>
-            </div>
+        <div className="mapContainer">
+            <h1>Map</h1>
+            <h2>Position: {latQuery}, {lngQuery}</h2>
+            <button onClick={handleChangePosition}>
+                Change Position to Tehran
+            </button>
         </div>
     );
 }
