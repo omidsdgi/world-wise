@@ -2,20 +2,15 @@ import styles from './CountryList.module.css'
 import Spinner from "@/components/Spinner";
 import Message from "@/components/Message";
 import CountryItem from "@/components/CountryItem";
-import {CityType} from "@/type/CityType";
-import {useLayout} from "@/contexts/LayoutContext";
+import {useCities} from "@/contexts/LayoutContext";
 
-interface CountryListProps {
-    cities: CityType[];
-    isLoading: boolean;
-}
 
 interface CountryProps  {
     country: string;
     emoji: string;
 };
 export  function CountryList() {
-    const {cities,isLoading}=useLayout()
+    const {cities,isLoading}=useCities()
     if (isLoading) return<Spinner />;
     if (!cities.length) return <Message message="Add your first city by clicking on a city on the map"/>;
 

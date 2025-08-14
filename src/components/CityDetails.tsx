@@ -1,17 +1,9 @@
-import React, {useMemo} from "react";
+import React from "react";
 import styles from './CityDetails.module.css';
-import Spinner from "@/components/Spinner";
 import Message from "@/components/Message";
 import { useRouter } from "next/router";
-import {CityType} from "@/type/CityType";
-import {useLayout} from "@/contexts/LayoutContext";
-import {router} from "next/client";
+import {useCities} from "@/contexts/LayoutContext";
 import Button from "@/components/Button";
-
-interface CityDetailsProps {
-    city: CityType;
-    isLoading: boolean;
-}
 
 const formatDate = (date: string) =>
     new Intl.DateTimeFormat('en-US', {
@@ -21,14 +13,10 @@ const formatDate = (date: string) =>
     }).format(new Date(date));
 
 export function CityDetails() {
-    const { cities, isLoading } = useLayout();
+    const { currentCity,isLoading } = useCities();
     const router = useRouter();
-    const { id } = router.query;
 
-    const city = cities.find((c) => c.id.toString() === id?.toString());
-
-    if (isLoading) return <Spinner />;
-    if (!city) return <Message message="City not found" />;
+    if (!currentCity) return <Message message="City not found" />;
 
     const handleBack = () => {
         router.push("/app/cities");
@@ -39,30 +27,30 @@ export function CityDetails() {
             <div className={styles.row}>
                 <h6>City name</h6>
                 <h3>
-                    <span>{city.emoji}</span> {city.cityName}
+                    <span>{currentCity.emoji}</span> {currentCity.cityName}
                 </h3>
             </div>
 
             <div className={styles.row}>
-                <h6>You went to {city.cityName} on</h6>
-                <p>{formatDate(city.date)}</p>
+                <h6>You went to {currentCity.cityName} on</h6>
+                <p>{formatDate(currentCity.date)}</p>
             </div>
 
-            {city.notes && (
+            {currentCity.notes && (
                 <div className={styles.row}>
                     <h6>Your notes</h6>
-                    <p>{city.notes}</p>
+                    <p>{currentCity.notes}</p>
                 </div>
             )}
 
             <div className={styles.row}>
                 <h6>Learn more</h6>
                 <a
-                    href={`https://en.wikipedia.org/wiki/${city.cityName}`}
+                    href={`https://en.wikipedia.org/wiki/${currentCity.cityName}`}
                     target="_blank"
                     rel="noopener noreferrer"
                 >
-                    Check out {city.cityName} on Wikipedia &rarr;
+                    Check out {currentCity.cityName} on Wikipedia &rarr;
                 </a>
             </div>
 
