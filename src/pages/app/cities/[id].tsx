@@ -13,7 +13,7 @@ export default function CityDetailsPage({ city, isLoading }: CityDetailsPageProp
 }
 
 export async function getServerSideProps({ params }:any) {
-    const res = await fetch(`http://localhost:8000/api/cities/${params.id}`);
+    const res = await fetch(`http://localhost:8000/cities/${params.id}`);
     const city = res.ok ? await res.json() : null;
     return { props: { city, isLoading: false } };
 }

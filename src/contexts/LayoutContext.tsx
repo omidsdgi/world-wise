@@ -34,7 +34,16 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
 
     }, []);
 
-    async function getCity(id:string) {
+    async function getCity(id: string) {
+        console.log('📋 Cities array length:', cities.length);
+
+        const foundCity = cities.find(city => city.id.toString() === id);
+
+        if (foundCity) {
+            setCurrentCity(foundCity);
+            return;
+        }
+
         try {
             setIsLoading(true);
             const res = await fetch(`http://localhost:8000/cities/${id}`);
@@ -42,24 +51,28 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
             const data: CityType = await res.json();
             setCurrentCity(data);
         } catch {
-            alert("There was an error loading data...");
+            console.error('❌ Could not find city with ID:', id);
+            alert("There was an error loading city data...");
         } finally {
             setIsLoading(false);
         }
     }
+
     const router = useRouter();
     const { id } = router.query as { id?: string };
-    useEffect(() => {
-        if (id){
-        getCity(id);
-        }else {
-            setCurrentCity(null);
-        }
-    }, [id]);
 
     useEffect(() => {
-        console.log('currentCity updated:', currentCity);
+
+        if (id && router.isReady) {
+            getCity(id);
+        } else if (!id) {
+            setCurrentCity(null);
+        }
+    }, [id, router.isReady, cities]);
+
+    useEffect(() => {
     }, [currentCity]);
+
     return (
         <LayoutContext.Provider value={{
             cities, isLoading,currentCity,getCity
@@ -68,9 +81,11 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
         </LayoutContext.Provider>
     )
 }
+
 function  useCities(){
     const context = useContext(LayoutContext);
     if (context === undefined) throw new Error("LayoutContext was used outside LayoutProvider");
     return context;
 }
+
 export {CitiesProvider,useCities};
