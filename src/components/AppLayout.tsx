@@ -1,18 +1,17 @@
 import styles from "./AppLayout.module.css";
 import { Sidebar } from "./Sidebar";
-import {Map} from "@/components/Map";
 import {CitiesProvider} from "@/contexts/LayoutContext";
+import {MapComponent} from "@/components/Map";
 
 
 
 export function AppLayout() {
-       return (
+    return (
         <CitiesProvider>
-        <div className={styles.app}>
-            <Sidebar/>
-            <Map/>
-        </div>
+            <div className={styles.app}>
+                <Sidebar />
+                <MapComponent />
+            </div>
         </CitiesProvider>
     );
 }
-
