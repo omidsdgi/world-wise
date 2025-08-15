@@ -1,29 +1,27 @@
-import { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import dynamic from 'next/dynamic';
 import styles from './Map.module.css';
+import {useCities} from "@/contexts/LayoutContext";
 
 // Leaflet components را dynamic import کن
-const MapContainer = dynamic(
-    () => import('react-leaflet').then(mod => mod.MapContainer),
+const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer),
     { ssr: false }
 );
 
-const TileLayer = dynamic(
-    () => import('react-leaflet').then(mod => mod.TileLayer),
+const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer),
     { ssr: false }
 );
 
-const Marker = dynamic(
-    () => import('react-leaflet').then(mod => mod.Marker),
+const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker),
     { ssr: false }
 );
 
-const Popup = dynamic(
-    () => import('react-leaflet').then(mod => mod.Popup),
+const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup),
     { ssr: false }
 );
 
 export function MapComponent() {
+    const {cities} = useCities()
     const [mapPosition] = useState<[number, number]>([40, 0]);
     const [isMounted, setIsMounted] = useState(false);
 
@@ -33,17 +31,7 @@ export function MapComponent() {
 
     if (!isMounted) {
         return (
-            <div className={styles.mapContainer}>
-                <div style={{
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--color-light--2)'
-                }}>
-                    Loading Map...
-                </div>
-            </div>
+            <div className={styles.mapContainer}> Loading Map...</div>
         );
     }
     return (
@@ -58,9 +46,10 @@ export function MapComponent() {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
                 />
-                <Marker position={mapPosition}>
-                    <Popup>Mehraneh where are you</Popup>
-                </Marker>
+                {cities.map((city)=>(
+                    <Marker position={[city.position.lat, city.position.lng]} key={city.id}>
+                    <Popup><span>{city.emoji}</span> <span>{city.cityName}</span></Popup>
+                </Marker>))}
             </MapContainer>
         </div>
     );
