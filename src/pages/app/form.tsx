@@ -6,11 +6,7 @@ export default function FormPage() {
     const { lat, lng } = router.query;
     return (
         <div>
-            <h1>Add a City</h1>
-            <p>
-                Position: {lat}, {lng}
-            </p>
-            <Form />
+         <Form />
         </div>
     );
 }

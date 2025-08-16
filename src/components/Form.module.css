@@ -14,6 +14,14 @@
   gap: 0.5rem;
   position: relative;
 }
+.row input,
+.row textarea {
+  color: #000; /* رنگ مشکی */
+  background-color: #fff; /* اختیاری: زمینه سفید */
+  border: 1px solid #ccc; /* اختیاری: حاشیه مشخص */
+  border-radius: 4px; /* اختیاری: کمی گرد شدن گوشه‌ها */
+  padding: 0.5rem; /* اختیاری: فاصله داخلی مناسب */
+}
 
 .buttons {
   display: flex;
@@ -40,5 +48,5 @@
 
 .wrapper :global(.react-datepicker) {
   font-family: inherit;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
 }

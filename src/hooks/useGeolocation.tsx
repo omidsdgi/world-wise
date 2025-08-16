@@ -12,7 +12,6 @@ export function useGeolocation(defaultPosition: Position = null) {
             setError("Geolocation is not supported");
             return;
         }
-
         setIsLoading(true);
 
         navigator.geolocation.getCurrentPosition(

@@ -1,10 +1,10 @@
 import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
 import styles from "./Map.module.css";
 import {useCities} from "@/contexts/LayoutContext";
 import {useGeolocation} from "@/hooks/useGeolocation";
 import Button from "@/components/Button";
+import {useUrlPosition} from "@/hooks/useUrlPosition";
 
 
 // ✅ فقط روی کلاینت لود میشه
@@ -18,29 +18,34 @@ const DetectClick = dynamic(() => import("./DetectClick").then(m => m.DetectClic
 
 export function MapComponent() {
     const {cities} = useCities();
-    const router = useRouter();
-    const {lat, lng} = router.query as { lat?: string; lng?: string };
+    const { lat, lng } = useUrlPosition();
 
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => setIsMounted(true), []);
 
-    const {isLoading: isLoadingPosition, position: geolocationPosition, error, getPosition} = useGeolocation()
+    const {isLoading: isLoadingPosition, position: geolocationPosition,getPosition} = useGeolocation()
     const [hasClickedOnMap, setHasClickedOnMap] = useState(false);
 
     const [mapPosition, setMapPosition] = useState<[number, number]>(() => {
-        if (lat && lng) return [parseFloat(lat), parseFloat(lng)];
+        if (lat && lng) return [lat, lng];
         return [35.6892, 51.3890];
-    });
+    })
 
-    useEffect(()=>{
+    useEffect(()=> {
         if(geolocationPosition) {
             setMapPosition([geolocationPosition.lat, geolocationPosition.lng]);
         }
-    },[geolocationPosition])
+    },[geolocationPosition]);
+
+    useEffect(() => {
+        if (geolocationPosition) {
+            setMapPosition(geolocationPosition.lat,geolocationPosition.lng);
+        }
+    }, [geolocationPosition]);
 
     useEffect(() => {
         if (lat && lng) {
-            setMapPosition([parseFloat(lat), parseFloat(lng)]);
+            setMapPosition([lat, lng]);
         }
     }, [lat, lng]);
 
