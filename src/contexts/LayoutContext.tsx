@@ -35,7 +35,6 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
     }, []);
 
     async function getCity(id: string) {
-        console.log('📋 Cities array length:', cities.length);
 
         const foundCity = cities.find(city => city.id.toString() === id);
 
@@ -51,7 +50,6 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
             const data: CityType = await res.json();
             setCurrentCity(data);
         } catch {
-            console.error('❌ Could not find city with ID:', id);
             alert("There was an error loading city data...");
         } finally {
             setIsLoading(false);

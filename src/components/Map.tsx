@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import styles from "./Map.module.css";
 import {useCities} from "@/contexts/LayoutContext";
-import {ChangeCenter} from "@/components/ChangeCenterMap";
-import {DetectClick} from "@/components/DetectClick";
+import {useGeolocation} from "@/hooks/useGeolocation";
+import Button from "@/components/Button";
 
 
 // ✅ فقط روی کلاینت لود میشه
@@ -17,17 +17,26 @@ const DetectClick = dynamic(() => import("./DetectClick").then(m => m.DetectClic
 
 
 export function MapComponent() {
-    const { cities } = useCities();
+    const {cities} = useCities();
     const router = useRouter();
-    const { lat, lng } = router.query as { lat?: string; lng?: string };
+    const {lat, lng} = router.query as { lat?: string; lng?: string };
 
     const [isMounted, setIsMounted] = useState(false);
     useEffect(() => setIsMounted(true), []);
+
+    const {isLoading: isLoadingPosition, position: geolocationPosition, error, getPosition} = useGeolocation()
+    const [hasClickedOnMap, setHasClickedOnMap] = useState(false);
 
     const [mapPosition, setMapPosition] = useState<[number, number]>(() => {
         if (lat && lng) return [parseFloat(lat), parseFloat(lng)];
         return [35.6892, 51.3890];
     });
+
+    useEffect(()=>{
+        if(geolocationPosition) {
+            setMapPosition([geolocationPosition.lat, geolocationPosition.lng]);
+        }
+    },[geolocationPosition])
 
     useEffect(() => {
         if (lat && lng) {
@@ -41,6 +50,18 @@ export function MapComponent() {
 
     return (
         <div className={styles.mapContainer}>
+            {!hasClickedOnMap && (
+                <Button type="position" onClick={getPosition}>
+                    Use your position
+                </Button>
+            )}
+
+            {isLoadingPosition && (
+                <Button type="position" disabled>
+                    Loading Position...
+                </Button>
+            )}
+
             <MapContainer
                 center={mapPosition}
                 zoom={6}
@@ -64,9 +85,8 @@ export function MapComponent() {
                 ))}
 
                 <ChangeCenter position={mapPosition} />
-                <DetectClick/>
+                <DetectClick onMapClick={() => setHasClickedOnMap(true)}/>
             </MapContainer>
         </div>
     );
 }
-
