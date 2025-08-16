@@ -5,6 +5,11 @@ import { useRouter } from "next/router";
 import {useCities} from "@/contexts/LayoutContext";
 import Button from "@/components/Button";
 
+type CityDetailsProps = {
+    city: CityType;
+    isLoading: boolean;
+};
+
 const formatDate = (date: string) =>
     new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
@@ -13,7 +18,7 @@ const formatDate = (date: string) =>
     }).format(new Date(date));
 
 export function CityDetails() {
-    const { currentCity,isLoading } = useCities();
+    const { currentCity } = useCities();
     const router = useRouter();
 
     if (!currentCity) return <Message message="City not found" />;

@@ -1,45 +1,50 @@
-import {useState, useEffect} from 'react';
-import dynamic from 'next/dynamic';
-import styles from './Map.module.css';
+import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import styles from "./Map.module.css";
 import {useCities} from "@/contexts/LayoutContext";
+import {ChangeCenter} from "@/components/ChangeCenterMap";
+import {DetectClick} from "@/components/DetectClick";
 
-// Leaflet components را dynamic import کن
-const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer),
-    { ssr: false }
-);
 
-const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer),
-    { ssr: false }
-);
+// ✅ فقط روی کلاینت لود میشه
+const MapContainer = dynamic(() => import("react-leaflet").then(m => m.MapContainer), { ssr: false });
+const TileLayer = dynamic(() => import("react-leaflet").then(m => m.TileLayer), { ssr: false });
+const Marker = dynamic(() => import("react-leaflet").then(m => m.Marker), { ssr: false });
+const Popup = dynamic(() => import("react-leaflet").then(m => m.Popup), { ssr: false });
+const ChangeCenter = dynamic(() => import("./ChangeCenterMap").then(m => m.ChangeCenter), { ssr: false });
+const DetectClick = dynamic(() => import("./DetectClick").then(m => m.DetectClick), { ssr: false });
 
-const Marker = dynamic(() => import('react-leaflet').then(mod => mod.Marker),
-    { ssr: false }
-);
-
-const Popup = dynamic(() => import('react-leaflet').then(mod => mod.Popup),
-    { ssr: false }
-);
 
 export function MapComponent() {
-    const {cities} = useCities()
-    const [mapPosition] = useState<[number, number]>([40, 0]);
+    const { cities } = useCities();
+    const router = useRouter();
+    const { lat, lng } = router.query as { lat?: string; lng?: string };
+
     const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => setIsMounted(true), []);
+
+    const [mapPosition, setMapPosition] = useState<[number, number]>(() => {
+        if (lat && lng) return [parseFloat(lat), parseFloat(lng)];
+        return [35.6892, 51.3890];
+    });
 
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
+        if (lat && lng) {
+            setMapPosition([parseFloat(lat), parseFloat(lng)]);
+        }
+    }, [lat, lng]);
 
     if (!isMounted) {
-        return (
-            <div className={styles.mapContainer}> Loading Map...</div>
-        );
+        return <div className={styles.mapContainer}>Loading Map...</div>;
     }
+
     return (
         <div className={styles.mapContainer}>
             <MapContainer
                 center={mapPosition}
-                zoom={13}
-                scrollWheelZoom={true}
+                zoom={6}
+                scrollWheelZoom
                 className={styles.map}
             >
                 <TileLayer
@@ -47,11 +52,21 @@ export function MapComponent() {
                     url="https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
                 />
 
-                {cities.map((city)=>(
-                    <Marker position={[city.position.lat, city.position.lng]} key={city.id}>
-                    <Popup><span>{city.emoji}</span> <span>{city.cityName}</span></Popup>
-                </Marker>))}
+                {cities.map((city) => (
+                    <Marker
+                        position={[city.position.lat, city.position.lng]}
+                        key={city.id}
+                    >
+                        <Popup>
+                            <span>{city.emoji}</span> <span>{city.cityName}</span>
+                        </Popup>
+                    </Marker>
+                ))}
+
+                <ChangeCenter position={mapPosition} />
+                <DetectClick/>
             </MapContainer>
         </div>
     );
 }
+
