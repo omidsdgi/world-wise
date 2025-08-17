@@ -14,14 +14,14 @@
   gap: 0.5rem;
   position: relative;
 }
-.row input,
-.row textarea {
-  color: #000; /* رنگ مشکی */
-  background-color: #fff; /* اختیاری: زمینه سفید */
-  border: 1px solid #ccc; /* اختیاری: حاشیه مشخص */
-  border-radius: 4px; /* اختیاری: کمی گرد شدن گوشه‌ها */
-  padding: 0.5rem; /* اختیاری: فاصله داخلی مناسب */
-}
+  .row input,
+  .row textarea {
+    color: #000; /* رنگ مشکی */
+    background-color: #fff; /* اختیاری: زمینه سفید */
+    border: 1px solid #ccc; /* اختیاری: حاشیه مشخص */
+    border-radius: 4px; /* اختیاری: کمی گرد شدن گوشه‌ها */
+    padding: 0.5rem; /* اختیاری: فاصله داخلی مناسب */
+  }
 
 .buttons {
   display: flex;
@@ -33,6 +33,7 @@
   right: 1rem;
   top: 2.7rem;
   font-size: 2.8rem;
+  color: var(--color-dark--0);
 }
 
 .form.loading {
