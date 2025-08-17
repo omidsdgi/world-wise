@@ -8,6 +8,7 @@ import {useUrlPosition} from "@/hooks/useUrlPosition";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import {useCities} from "@/contexts/LayoutContext";
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
 export function convertToEmoji(countryCode:string):string {
@@ -20,11 +21,12 @@ export function convertToEmoji(countryCode:string):string {
 
 
 export function Form() {
+    const {createCity,isLoading}=useCities()
     const { lat, lng } = useUrlPosition();
     const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false)
     const [cityName, setCityName] = useState<string>("");
     const [country, setCountry] = useState<string>("");
-    const [date, setDate] = useState<Date | null>(null);
+    const [date, setDate] = useState<Date >(new Date());
     const [notes, setNotes] = useState<string>("");
     const [emoji, setEmoji] = useState("")
 
@@ -55,11 +57,22 @@ export function Form() {
         }
             fetchCityData()
     },[lat,lng])
-function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
       e.preventDefault();
+      if (!lat || !lng) return;
+      const newCity = {
+         cityName,
+          country,
+          emoji,
+          date,
+          notes,
+          position:{lat,lng}
+      }
+  await createCity(newCity)
+    router.push("/app/cities")
 }
     return (
-        <form className={styles.form} onSubmit={handleSubmit}>
+        <form className={`${styles.form} ${isLoading ? styles.loading:""}`} onSubmit={handleSubmit}>
             <div className={styles.row}>
                 <label htmlFor="cityName">City name</label>
                 <input

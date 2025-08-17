@@ -12,13 +12,16 @@
     "server": "start http://localhost:8000/cities && json-server --watch data/cities.json --port 8000"
   },
   "dependencies": {
+    "dayjs": "^1.11.13",
+    "dayjs-jalali": "^0.0.2",
     "json-server": "^1.0.0-beta.3",
     "leaflet": "^1.9.4",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-datepicker": "^8.5.0",
     "react-dom": "^19.0.0",
-    "react-leaflet": "^5.0.0"
+    "react-leaflet": "^5.0.0",
+    "react-modern-calendar-datepicker": "^3.1.6"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

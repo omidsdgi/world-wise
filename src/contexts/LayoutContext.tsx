@@ -35,14 +35,12 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
     }, []);
 
     async function getCity(id: string) {
-
         const foundCity = cities.find(city => city.id.toString() === id);
 
         if (foundCity) {
             setCurrentCity(foundCity);
             return;
         }
-
         try {
             setIsLoading(true);
             const res = await fetch(`http://localhost:8000/cities/${id}`);
@@ -55,7 +53,6 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
             setIsLoading(false);
         }
     }
-
     const router = useRouter();
     const { id } = router.query as { id?: string };
 
@@ -66,14 +63,31 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
         } else if (!id) {
             setCurrentCity(null);
         }
-    }, [id, router.isReady, cities]);
+    }, [id, router.isReady, cities,getCity]);
 
     useEffect(() => {
     }, [currentCity]);
 
+    async function createCity(newCity: CityType) {
+        try {
+            setIsLoading(true);
+            const res = await fetch(`http://localhost:8000/cities`,{
+                method:"POST",
+                body:JSON.stringify(newCity),
+                headers:{"Content-Type":"application/json"}
+            });
+            const data: CityType = await res.json();
+            setCities((cities)=>[...cities, data]);
+        } catch {
+            alert("There was an error loading city data...");
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     return (
         <LayoutContext.Provider value={{
-            cities, isLoading,currentCity,getCity
+            cities, isLoading,currentCity,getCity,createCity
         }}>
             {children}
         </LayoutContext.Provider>
