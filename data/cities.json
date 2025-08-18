@@ -49,30 +49,6 @@
       }
     },
     {
-      "id": "97f0",
-      "cityName": "Sari",
-      "country": "Iran (Islamic Republic of)",
-      "emoji": "🇮🇷",
-      "date": "2025-08-17T09:38:40.689Z",
-      "notes": "",
-      "position": {
-        "lat": "36.48314061639213",
-        "lng": "53.14086914062501"
-      }
-    },
-    {
-      "id": "91f4",
-      "cityName": "Sari",
-      "country": "Iran (Islamic Republic of)",
-      "emoji": "🇮🇷",
-      "date": "2025-08-17T09:39:07.404Z",
-      "notes": "",
-      "position": {
-        "lat": "36.48314061639213",
-        "lng": "53.14086914062501"
-      }
-    },
-    {
       "id": "aba9",
       "cityName": "Ardestan",
       "country": "Iran (Islamic Republic of)",
@@ -98,30 +74,6 @@
     },
     {
       "id": "f0a6",
-      "cityName": "Herat",
-      "country": "Afghanistan",
-      "emoji": "🇦🇫",
-      "date": "2025-08-17T09:48:53.170Z",
-      "notes": "",
-      "position": {
-        "lat": "34.261756524459805",
-        "lng": "62.27600097656251"
-      }
-    },
-    {
-      "id": "6e4a",
-      "cityName": "Herat",
-      "country": "Afghanistan",
-      "emoji": "🇦🇫",
-      "date": "2025-08-17T09:48:53.170Z",
-      "notes": "",
-      "position": {
-        "lat": "34.261756524459805",
-        "lng": "62.27600097656251"
-      }
-    },
-    {
-      "id": "211f",
       "cityName": "Herat",
       "country": "Afghanistan",
       "emoji": "🇦🇫",

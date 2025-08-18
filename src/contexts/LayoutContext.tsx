@@ -6,7 +6,9 @@ type LayoutContextType = {
     cities: CityType[];
     currentCity: CityType | null;
     isLoading: boolean;
-    getCity: (id: string) => Promise<void>;
+    getCity: (id: number) => Promise<void>;
+    deleteCity:(id:number)=>Promise<void>;
+    createCity:(id:number)=>Promise<void>;
 }
 const LayoutContext=createContext<LayoutContextType | undefined>(undefined);
 
@@ -63,7 +65,7 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
         } else if (!id) {
             setCurrentCity(null);
         }
-    }, [id, router.isReady, cities,getCity]);
+    }, [id, router.isReady, cities, getCity]);
 
     useEffect(() => {
     }, [currentCity]);
@@ -84,10 +86,23 @@ function CitiesProvider({children}:{children:React.ReactNode}) {
             setIsLoading(false);
         }
     }
+    async function deleteCity(id:number) {
+        try {
+            setIsLoading(true);
+            await fetch(`http://localhost:8000/cities/${id}`,{
+                method:"DELETE"
+            });
+            setCities((cities)=>cities.filter(c=>c.id !== id));
+        } catch {
+            alert("There was an error deleting city ");
+        } finally {
+            setIsLoading(false);
+        }
+    }
 
     return (
         <LayoutContext.Provider value={{
-            cities, isLoading,currentCity,getCity,createCity
+            cities, isLoading,currentCity,getCity,createCity,deleteCity
         }}>
             {children}
         </LayoutContext.Provider>
