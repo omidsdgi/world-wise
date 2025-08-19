@@ -95,6 +95,42 @@
         "lat": "39.76632525654491",
         "lng": "32.92602539062501"
       }
+    },
+    {
+      "id": "8930",
+      "cityName": "Beirut",
+      "country": "Lebanon",
+      "emoji": "🇱🇧",
+      "date": "2025-08-19T06:33:48.451Z",
+      "notes": "",
+      "position": {
+        "lat": "33.876116579321206",
+        "lng": "35.496104576287685"
+      }
+    },
+    {
+      "id": "d860",
+      "cityName": "Damascus",
+      "country": "Syrian Arab Republic (the)",
+      "emoji": "🇸🇾",
+      "date": "2025-08-19T06:46:19.774Z",
+      "notes": "",
+      "position": {
+        "lat": 33.502468829034314,
+        "lng": 36.30935647668839
+      }
+    },
+    {
+      "id": "3596",
+      "cityName": "Levantine Sea",
+      "country": "",
+      "emoji": "",
+      "date": "2025-08-19T06:49:37.582Z",
+      "notes": "",
+      "position": {
+        "lat": 34.0833745509365,
+        "lng": 34.38402341442672
+      }
     }
   ]
 }

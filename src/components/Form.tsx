@@ -11,110 +11,166 @@ import "react-datepicker/dist/react-datepicker.css";
 import {useCities} from "@/contexts/LayoutContext";
 const BASE_URL = "https://api.bigdatacloud.net/data/reverse-geocode-client";
 
-export function convertToEmoji(countryCode:string):string {
-  const codePoints = countryCode
-    .toUpperCase()
-    .split("")
-    .map((char) => 127397 + char.charCodeAt(0));
-  return String.fromCodePoint(...codePoints);
+export function convertToEmoji(countryCode: string): string {
+    const codePoints = countryCode
+        .toUpperCase()
+        .split("")
+        .map((char) => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
 }
 
-
 export function Form() {
-    const {createCity,isLoading}=useCities()
+    const { createCity, isLoading } = useCities();
     const { lat, lng } = useUrlPosition();
-    const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false)
+    const [isLoadingGeocoding, setIsLoadingGeocoding] = useState(false);
     const [cityName, setCityName] = useState<string>("");
     const [country, setCountry] = useState<string>("");
-    const [date, setDate] = useState<Date >(new Date());
+    const [date, setDate] = useState<Date | null>(new Date());
     const [notes, setNotes] = useState<string>("");
-    const [emoji, setEmoji] = useState("")
+    const [emoji, setEmoji] = useState<string>("");
+    const [geocodingError, setGeocodingError] = useState<string>("");
 
     const router = useRouter();
+
     const handleBack = () => {
         router.back();
     };
 
-    useEffect( ()=>{
-        if (!lat ||!lng) return;
+    useEffect(() => {
+        if (!lat || !lng) return;
 
-        async function fetchCityData(){
-                setIsLoadingGeocoding(true)
-            try{
+        async function fetchCityData() {
+            setIsLoadingGeocoding(true);
+            setGeocodingError("");
+            try {
                 const res = await fetch(`${BASE_URL}?latitude=${lat}&longitude=${lng}`);
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
                 const data = await res.json();
-                console.log(data)
-                setCityName(data.city || data.locality ||null);
-                setCountry(data.countryName ||"");
-                setEmoji(data.countryCode ?convertToEmoji(data.countryCode):"");
-            }
-            catch (err){
+                console.log(data);
+
+                setCityName(data.city || data.locality || "");
+                setCountry(data.countryName || "");
+                setEmoji(data.countryCode ? convertToEmoji(data.countryCode) : "");
+            } catch (err) {
                 console.error("Failed to fetch city data:", err);
-            }
-            finally {
-                setIsLoadingGeocoding(false)
+                setGeocodingError("Failed to fetch location data. Please try again.");
+            } finally {
+                setIsLoadingGeocoding(false);
             }
         }
-            fetchCityData()
-    },[lat,lng])
-async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-      e.preventDefault();
-      if (!lat || !lng) return;
-      const newCity = {
-         cityName,
-          country,
-          emoji,
-          date,
-          notes,
-          position:{lat,lng}
-      }
-  await createCity(newCity)
-    router.push("/app/cities")
-}
+        fetchCityData();
+    }, [lat, lng]);
+
+    async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        if (!lat || !lng) {
+            alert("Please select a location on the map first.");
+            return;
+        }
+        if (!cityName.trim()) {
+            alert("Please enter a city name.");
+            return;
+        }
+        if (!date) {
+            alert("Please select a date.");
+            return;
+        }
+
+        const newCity = {
+            cityName: cityName.trim(),
+            country,
+            emoji,
+            date,
+            notes: notes.trim(),
+            position: { lat: Number(lat), lng: Number(lng) }
+        };
+
+        try {
+            await createCity(newCity);
+            router.push("/app/cities");
+        } catch (error) {
+            console.error("Failed to create city:", error);
+            alert("Failed to add city. Please try again.");
+        }
+    }
+
+    if (!lat && !lng) {
+        return (
+            <div className={styles.form}>
+                <p>Start by clicking somewhere on the map</p>
+            </div>
+        );
+    }
+
     return (
-        <form className={`${styles.form} ${isLoading ? styles.loading:""}`} onSubmit={handleSubmit}>
+        <form
+            className={`${styles.form} ${(isLoading || isLoadingGeocoding) ? styles.loading : ""}`}
+            onSubmit={handleSubmit}
+        >
+            {geocodingError && (
+                <div className={styles.error}>
+                    {geocodingError}
+                </div>
+            )}
+
             <div className={styles.row}>
                 <label htmlFor="cityName">City name</label>
                 <input
                     id="cityName"
                     onChange={(e) => setCityName(e.target.value)}
                     value={cityName}
+                    disabled={isLoadingGeocoding}
+                    required
                 />
-                 <span className={styles.flag}>{emoji}</span>
+                <span className={styles.flag}>{emoji}</span>
             </div>
+
             <div className={styles.row}>
-                <label htmlFor="date">When did you go to {cityName}?</label>
-            <DatePicker
-                selected={date}
-                onChange={(date: Date | null) => setDate(date)}
-                dateFormat="yyyy/MM/dd"
-                placeholderText="Select a date"
-                maxDate={new Date()}
-                showMonthDropdown
-                showYearDropdown
-            />
+                <label htmlFor="date">When did you go to {cityName || "this place"}?</label>
+                <DatePicker
+                    id="date"
+                    selected={date}
+                    onChange={(selectedDate: Date | null) => setDate(selectedDate)}
+                    dateFormat="yyyy/MM/dd"
+                    placeholderText="Select a date"
+                    maxDate={new Date()}
+                    showMonthDropdown
+                    showYearDropdown
+                    disabled={isLoadingGeocoding}
+                    required
+                />
             </div>
+
             <div className={styles.row}>
-                <label htmlFor="notes">Notes about your trip to {cityName}</label>
+                <label htmlFor="notes">Notes about your trip to {cityName || "this place"}</label>
                 <textarea
                     id="notes"
                     onChange={(e) => setNotes(e.target.value)}
                     value={notes}
+                    disabled={isLoadingGeocoding}
                 />
             </div>
 
             <div className={styles.buttons}>
-                <Button type="primary">Add</Button>
+                <Button
+                    type="primary"
+                    disabled={isLoading || isLoadingGeocoding || !cityName.trim()}
+                >
+                    {isLoading ? "Adding..." : "Add"}
+                </Button>
                 <Button
                     type="back"
-                    onClick={(e)=>{
+                    onClick={(e) => {
                         e.preventDefault();
-                        handleBack()
-                    }}>
+                        handleBack();
+                    }}
+                    disabled={isLoading}
+                >
                     &larr; Back
                 </Button>
             </div>
         </form>
     );
 }
-

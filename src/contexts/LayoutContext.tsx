@@ -1,118 +1,167 @@
-import React, {createContext, useContext, useEffect, useState} from "react";
+import React, {createContext, useContext, useEffect, useReducer} from "react";
 import {CityType} from "@/type/CityType";
 import {useRouter} from "next/router";
+
+type State = {
+    cities: CityType[],
+    currentCity: CityType | null,
+    isLoading: boolean,
+    error: string
+}
+
+type Action =
+    | {type: "loading"}
+    | {type: "cities/loaded"; payload: CityType[]}
+    | {type: "city/loaded"; payload: CityType | null}
+    | {type: "city/created"; payload: CityType}
+    | {type: "city/deleted"; payload: number}
+    | {type: "rejected"; payload: string}
 
 type LayoutContextType = {
     cities: CityType[];
     currentCity: CityType | null;
     isLoading: boolean;
-    getCity: (id: number) => Promise<void>;
-    deleteCity:(id:number)=>Promise<void>;
-    createCity:(id:number)=>Promise<void>;
+    error: string;
+    getCity: (id: string) => Promise<void>;
+    deleteCity: (id: number) => Promise<void>;
+    createCity: (city: CityType) => Promise<void>;
 }
-const LayoutContext=createContext<LayoutContextType | undefined>(undefined);
 
-function CitiesProvider({children}:{children:React.ReactNode}) {
+const BASE_URL = "http://localhost:8000"
 
-    const [cities, setCities] = useState<CityType[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const[currentCity,setCurrentCity]=useState<CityType | null>(null)
+const initialState: State = {
+    cities: [],
+    currentCity: null,
+    isLoading: false,
+    error: "",
+}
 
-    useEffect(() => {
-        async function fetchCities() {
-            try {
-                setIsLoading(true);
-                const res = await fetch("http://localhost:8000/cities");
-                if (!res.ok) throw new Error("Network error");
-                const data:CityType[] = await res.json();
-                setCities(data);
-            } catch  {
-                alert("There was an error loading data...");
-            } finally {
-                setIsLoading(false);
-            }
-        }
-        fetchCities();
-
-    }, []);
-
-    async function getCity(id: string) {
-        const foundCity = cities.find(city => city.id.toString() === id);
-
-        if (foundCity) {
-            setCurrentCity(foundCity);
-            return;
-        }
-        try {
-            setIsLoading(true);
-            const res = await fetch(`http://localhost:8000/cities/${id}`);
-            if (!res.ok) throw new Error("Network error");
-            const data: CityType = await res.json();
-            setCurrentCity(data);
-        } catch {
-            alert("There was an error loading city data...");
-        } finally {
-            setIsLoading(false);
-        }
+function reducer(state: State, action: Action): State {
+    switch(action.type) {
+        case "loading":
+            return {...state, isLoading: true}
+        case "cities/loaded":
+            return {...state, isLoading: false, cities: action.payload}
+        case "city/loaded":
+            return {...state, isLoading: false, currentCity: action.payload}
+        case "city/created":
+            return {...state, isLoading: false, cities: [...state.cities, action.payload]}
+        case "city/deleted":
+            return {...state, isLoading: false, cities: state.cities.filter(c => c.id !== action.payload)}
+        case "rejected":
+            return {...state, isLoading: false, error: action.payload}
+        default:
+            throw new Error("Unknown action type");
     }
+}
+
+const LayoutContext = createContext<LayoutContextType | undefined>(undefined);
+
+function CitiesProvider({children}: {children: React.ReactNode}) {
+    const [{cities, isLoading, currentCity, error}, dispatch] = useReducer(reducer, initialState);
     const router = useRouter();
     const { id } = router.query as { id?: string };
 
     useEffect(() => {
-
-        if (id && router.isReady) {
-            getCity(id);
-        } else if (!id) {
-            setCurrentCity(null);
+        async function fetchCities() {
+            dispatch({type: "loading"})
+            try {
+                const res = await fetch(`${BASE_URL}/cities`);
+                const data: CityType[] = await res.json();
+                dispatch({type: "cities/loaded", payload: data})
+            } catch {
+                dispatch({
+                    type: "rejected",
+                    payload: "There was an error loading cities..."
+                })
+            }
         }
-    }, [id, router.isReady, cities, getCity]);
+        fetchCities();
+    }, []);
 
     useEffect(() => {
-    }, [currentCity]);
+        if (!router.isReady) return;
+        if (id) {
+            getCity(id);
+        } else {
+            dispatch({type: "city/loaded", payload: null});
+        }
+    }, [id, router.isReady, cities]);
 
-    async function createCity(newCity: CityType) {
+    async function getCity(id: string) {
+        const foundCity = cities.find(city => city.id.toString() === id);
+        if (foundCity) {
+            dispatch({type: "city/loaded", payload: foundCity});
+            return;
+        }
+
+        dispatch({type: "loading"});
         try {
-            setIsLoading(true);
-            const res = await fetch(`http://localhost:8000/cities`,{
-                method:"POST",
-                body:JSON.stringify(newCity),
-                headers:{"Content-Type":"application/json"}
-            });
+            const res = await fetch(`${BASE_URL}/cities/${id}`);
             const data: CityType = await res.json();
-            setCities((cities)=>[...cities, data]);
+            dispatch({type: "city/loaded", payload: data});
         } catch {
-            alert("There was an error loading city data...");
-        } finally {
-            setIsLoading(false);
+            dispatch({
+                type: "rejected",
+                payload: "There was an error loading city data...",
+            });
         }
     }
-    async function deleteCity(id:number) {
+
+    async function createCity(newCity: CityType) {
+        dispatch({type: "loading"});
         try {
-            setIsLoading(true);
-            await fetch(`http://localhost:8000/cities/${id}`,{
-                method:"DELETE"
+            const res = await fetch(`${BASE_URL}/cities`, {
+                method: "POST",
+                body: JSON.stringify(newCity),
+                headers: {"Content-Type": "application/json"}
             });
-            setCities((cities)=>cities.filter(c=>c.id !== id));
+            const data: CityType = await res.json();
+            dispatch({type: "city/created", payload: data});
         } catch {
-            alert("There was an error deleting city ");
-        } finally {
-            setIsLoading(false);
+            dispatch({
+                type: "rejected",
+                payload: "There was an error creating the city",
+            });
+        }
+    }
+
+    async function deleteCity(id: number) {
+        dispatch({type: "loading"});
+        try {
+            await fetch(`${BASE_URL}/cities/${id}`, {
+                method: "DELETE"
+            });
+            dispatch({type: "city/deleted", payload: id});
+        } catch {
+            dispatch({
+                type: "rejected",
+                payload: "There was an error deleting city",
+            });
         }
     }
 
     return (
         <LayoutContext.Provider value={{
-            cities, isLoading,currentCity,getCity,createCity,deleteCity
+            cities,
+            isLoading,
+            currentCity,
+            error,
+            getCity,
+            createCity,
+            deleteCity
         }}>
             {children}
         </LayoutContext.Provider>
-    )
+    );
 }
 
-function  useCities(){
+function useCities() {
     const context = useContext(LayoutContext);
-    if (context === undefined) throw new Error("LayoutContext was used outside LayoutProvider");
+    if (context === undefined) {
+        throw new Error("LayoutContext was used outside LayoutProvider");
+    }
     return context;
 }
 
-export {CitiesProvider,useCities};
+export { CitiesProvider, useCities };
