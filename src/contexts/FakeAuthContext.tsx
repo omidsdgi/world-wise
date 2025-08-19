@@ -12,7 +12,7 @@ type State = {
 }
 type Action =
     | {type: "login",payload: UserType}
-|{type: "logout"}
+    |{type: "logout"}
 
 type AuthContextType = {
     user: UserType|null;
@@ -31,7 +31,7 @@ const AuthContext= createContext<AuthContextType | undefined>(undefined);
 
 const initialState:State = {
     user:null,
-    isAuthenticated: true,
+    isAuthenticated: false,
 }
 function reducer(state:State,action:Action):State {
     switch (action.type) {
@@ -41,8 +41,8 @@ function reducer(state:State,action:Action):State {
             return {...state,user:null, isAuthenticated: false}
         default:
             throw new Error("Unknown action type")
-}
     }
+}
 
 function  AuthProvider({children}:{children: React.ReactNode}) {
     const [{user,isAuthenticated},dispatch] = useReducer(reducer, initialState);
@@ -61,8 +61,8 @@ function  AuthProvider({children}:{children: React.ReactNode}) {
 }
 
 function useAuth() {
-const context = useContext(AuthContext);
-if (context === undefined) throw new Error("useAuth must be used within the AuthProvider");
-
+    const context = useContext(AuthContext);
+    if (context === undefined) throw new Error("useAuth must be used within the AuthProvider");
+    return context
 }
 export {AuthProvider, useAuth};

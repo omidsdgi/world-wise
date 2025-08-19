@@ -15,7 +15,7 @@ export  function PageNav() {
                     <Link href="/pricing">Pricing</Link>
                 </li>
                 <li>
-                    <Link href="/logo" className={styles.ctaLink}>Login</Link>
+                    <Link href="/login" className={styles.ctaLink}>Login</Link>
                 </li>
             </ul>
         </nav>

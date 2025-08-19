@@ -1,16 +1,17 @@
 import styles from "./User.module.css";
+import {useAuth} from "@/contexts/FakeAuthContext";
+import {useRouter} from "next/router";
 
-const FAKE_USER = {
-  name: "Jack",
-  email: "jack@example.com",
-  password: "qwerty",
-  avatar: "https://i.pravatar.cc/100?u=zz",
-};
 
 function User() {
-  const user = FAKE_USER;
+const {user,logout} = useAuth()
+    const router = useRouter();
 
-  function handleClick() {}
+  function handleClick() {
+logout()
+      router.push("/")
+  }
+  if (!user) return null;
 
   return (
     <div className={styles.user}>
