@@ -4,6 +4,8 @@ import type { AppProps } from "next/app";
 import {AppLayout} from "@/components";
 import {useRouter} from "next/router";
 import {AuthProvider} from "@/contexts/FakeAuthContext";
+import {CitiesProvider} from "@/contexts/LayoutContext";
+import ProtectedRoute from "@/pages/protectedRoute";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
     const router = useRouter();
@@ -11,12 +13,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
     return(
         <AuthProvider>
+            <CitiesProvider>
             {path.startsWith ("/app")?(
-            <AppLayout/>
+                <ProtectedRoute>
+                    <AppLayout />
+                </ProtectedRoute>
                 ):(
                 <Component {...pageProps} />
             )}
-            <Component {...pageProps} />)
+            </CitiesProvider>
         </AuthProvider>
     )
 }
